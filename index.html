@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bảng Điểm Điện Tử Vovinam - Việt Võ Đạo</title>
+
+    <!-- CẤU HÌNH ICON APP TRÊN MÀN HÌNH CHÍNH ĐIỆN THOẠI (iOS & Android) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Điểm Vovinam">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#090d16">
+
+    <!-- Logo Vovinam TH An Lạc 3 làm Icon App ngoài màn hình điện thoại & tab trình duyệt -->
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="apple-touch-icon" href="logo.jpg">
+    <style>
+        :root {
+            --red-bg: linear-gradient(145deg, #d31027, #8b0000);
+            --blue-bg: linear-gradient(145deg, #0052d4, #002266);
+            --gold: #ffd700;
+            --dark-panel: #111827;
+            --control-bg: #1f2937;
+            --text-light: #f9fafb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #090d16;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-light);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+
+        /* Lớp phủ mờ khi có hình nền để chữ và điểm số luôn rõ nét */
+        body.has-custom-bg .fighter-red {
+            background: linear-gradient(145deg, rgba(211, 16, 39, 0.82), rgba(139, 0, 0, 0.85));
+            backdrop-filter: blur(4px);
+        }
+
+        body.has-custom-bg .fighter-blue {
+            background: linear-gradient(145deg, rgba(0, 82, 212, 0.82), rgba(0, 34, 102, 0.85));
+            backdrop-filter: blur(4px);
+        }
+
+        body.has-custom-bg .center-panel {
+            background: rgba(17, 24, 39, 0.86);
+            backdrop-filter: blur(6px);
+        }
+
+        body.has-custom-bg header {
+            background: linear-gradient(90deg, rgba(153, 27, 27, 0.88), rgba(17, 24, 39, 0.88) 30%, rgba(17, 24, 39, 0.88) 70%, rgba(30, 64, 175, 0.88));
+            backdrop-filter: blur(4px);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-bg-picker {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: 1px solid rgba(255, 215, 0, 0.6);
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-bg-picker:hover {
+            background: var(--gold);
+            color: #000;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(90deg, #991b1b, #111827 30%, #111827 70%, #1e40af);
+            padding: 12px 24px;
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 1.7rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-logo {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+        }
+
+        .round-badge {
+            background: var(--gold);
+            color: #000;
+            font-weight: 900;
+            padding: 6px 18px;
+            border-radius: 999px;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+        }
+
+        /* MAIN SCOREBOARD */
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 400px 1fr;
+            gap: 12px;
+            padding: 12px;
+            min-height: min-content;
+        }
+
+        /* FIGHTER SIDES */
+        .fighter-panel {
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            position: relative;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.5);
+            border: 4px solid rgba(255, 255, 255, 0.15);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .fighter-red {
+            background: var(--red-bg);
+        }
+
+        .fighter-blue {
+            background: var(--blue-bg);
+        }
+
+        .fighter-name {
+            font-size: 2.4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.6);
+            border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 8px;
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .fighter-name:hover::after {
+            content: " ✎";
+            font-size: 1.4rem;
+            opacity: 0.8;
+        }
+
+        .score-box {
+            font-size: 12.5rem;
+            font-weight: 900;
+            line-height: 1;
+            text-shadow: 0 10px 25px rgba(0, 0, 0, 0.65);
+            margin: auto 0;
+            font-variant-numeric: tabular-nums;
+            transition: transform 0.15s ease;
+        }
+
+        .score-bump {
+            transform: scale(1.15);
+        }
+
+        .winner-tag {
+            display: none;
+            position: absolute;
+            top: 90px;
+            background: var(--gold);
+            color: #000;
+            font-weight: 900;
+            font-size: 1.35rem;
+            padding: 6px 20px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        /* BLINK ANIMATION FOR WINNER */
+        @keyframes winnerBlink {
+            0%, 100% {
+                filter: brightness(1);
+                border-color: var(--gold);
+                box-shadow: 0 0 45px var(--gold), inset 0 0 30px var(--gold);
+                transform: scale(1.01);
+            }
+            50% {
+                filter: brightness(1.45);
+                border-color: #ffffff;
+                box-shadow: 0 0 70px #ffffff, inset 0 0 50px var(--gold);
+                transform: scale(0.99);
+            }
+        }
+
+        .winner-active {
+            animation: winnerBlink 0.75s infinite ease-in-out;
+            z-index: 5;
+        }
+
+        .winner-active .winner-tag {
+            display: block;
+        }
+
+        /* SCORE BUTTONS */
+        .score-controls {
+            display: flex;
+            gap: 14px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-score {
+            flex: 1;
+            min-width: 90px;
+            padding: 16px 10px;
+            font-size: 1.65rem;
+            font-weight: 800;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.35);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-score:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+            border-color: #fff;
+        }
+
+        .btn-score:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        .btn-score.btn-minus {
+            flex: 0.5;
+            font-size: 1.3rem;
+            opacity: 0.85;
+            background: rgba(0, 0, 0, 0.55);
+        }
+
+        .btn-score:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* CENTER CONTROL PANEL */
+        .center-panel {
+            background: var(--dark-panel);
+            border-radius: 16px;
+            border: 2px solid #374151;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            gap: 10px;
+        }
+
+        /* ROUND PILLS (HIỆP 1, 2, 3, HIỆP PHỤ) */
+        .round-selector {
+            display: flex;
+            width: 100%;
+            gap: 6px;
+            justify-content: space-between;
+        }
+
+        .round-pill {
+            flex: 1;
+            padding: 8px 4px;
+            border-radius: 8px;
+            border: 2px solid #374151;
+            background: #1f2937;
+            color: #9ca3af;
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .round-pill.active-round {
+            border-color: var(--gold);
+            background: rgba(255, 215, 0, 0.15);
+            color: var(--gold);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .round-pill.overtime-pill.active-round {
+            border-color: #ef4444;
+            background: #991b1b;
+            color: #fff;
+            animation: pulseUrgent 0.8s infinite alternate;
+        }
+
+        /* MODE SELECTOR (FIGHT / BREAK) */
+        .mode-tabs {
+            display: flex;
+            width: 100%;
+            background: var(--control-bg);
+            border-radius: 10px;
+            padding: 4px;
+            gap: 6px;
+        }
+
+        .mode-tab {
+            flex: 1;
+            padding: 9px 8px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: #9ca3af;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .mode-tab.active-fight {
+            background: #059669;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.5);
+        }
+
+        .mode-tab.active-break {
+            background: #d97706;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.5);
+        }
+
+        /* TIMER DISPLAY */
+        .timer-container {
+            width: 100%;
+            background: #000;
+            border: 3px solid #4b5563;
+            border-radius: 14px;
+            padding: 14px 10px;
+            text-align: center;
+            box-shadow: inset 0 0 20px rgba(0, 255, 128, 0.1);
+            position: relative;
+        }
+
+        .timer-status-label {
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #10b981;
+            margin-bottom: 2px;
+        }
+
+        .timer-display {
+            font-size: 4.8rem;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+            color: var(--gold);
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            line-height: 1.05;
+        }
+
+        .timer-display.urgent {
+            color: #ef4444;
+            text-shadow: 0 0 25px rgba(239, 68, 68, 0.8);
+            animation: pulseUrgent 0.5s infinite alternate;
+        }
+
+        @keyframes pulseUrgent {
+            from { opacity: 1; }
+            to { opacity: 0.55; }
+        }
+
+        /* TIME SETTINGS */
+        .time-settings {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+            background: var(--control-bg);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .setting-group label {
+            color: #d1d5db;
+            font-weight: 600;
+        }
+
+        .setting-group input {
+            background: #111827;
+            border: 1px solid #4b5563;
+            color: #fff;
+            padding: 5px 8px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* ACTION BUTTONS */
+        .center-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px 10px;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+        }
+
+        .btn-action:hover {
+            filter: brightness(1.12);
+            transform: translateY(-2px);
+        }
+
+        .btn-action:active {
+            transform: translateY(1px);
+        }
+
+        .btn-start { background: #10b981; }
+        .btn-pause { background: #f59e0b; color: #000; }
+        .btn-bell  { background: #6366f1; }
+        .btn-end   { background: #e11d48; font-size: 1.08rem; padding: 13px; }
+        .btn-reset { background: #374151; border: 1px solid #6b7280; }
+
+        /* FOOTER SHORTCUTS */
+        footer {
+            background: #111827;
+            padding: 8px 20px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #9ca3af;
+            border-top: 1px solid #1f2937;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        kbd {
+            background: #374151;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* TỐI ƯU HIỂN THỊ TRÊN ĐIỆN THOẠI (KHÔNG CẦN LƯỚT, VẪN Nằm NGANG 2 BÊN) */
+        @media (max-width: 1024px) {
+            header {
+                padding: 6px 10px;
+                border-bottom-width: 2px;
+            }
+            .header-title {
+                font-size: clamp(0.85rem, 3.2vw, 1.2rem);
+                letter-spacing: 0.5px;
+            }
+            .round-badge {
+                font-size: clamp(0.65rem, 2.5vw, 0.9rem);
+                padding: 4px 10px;
+            }
+            footer {
+                display: none; /* Ẩn dòng phím tắt máy tính trên điện thoại để tiết kiệm diện tích */
+            }
+        }
+
+        /* 1. Khi cầm DỌC điện thoại (Portrait): Đồng hồ ở trên, Giáp Đỏ & Giáp Xanh nằm NGANG 2 bên ở dưới */
+        @media (max-width: 900px) and (orientation: portrait) {
+            main {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto 1fr;
+                gap: 8px;
+                padding: 8px;
+            }
+            .center-panel {
+                grid-column: 1 / -1;
+                grid-row: 1;
+                padding: 10px;
+                gap: 6px;
+            }
+            #panelRed {
+                grid-column: 1;
+                grid-row: 2;
+                padding: 12px 8px;
+            }
+            #panelBlue {
+                grid-column: 2;
+                grid-row: 2;
+                padding: 12px 8px;
+            }
+            .fighter-name {
+                font-size: clamp(1.1rem, 4.5vw, 1.5rem);
+                letter-spacing: 1px;
+                padding-bottom: 4px;
+            }
+            .score-box {
+                font-size: clamp(4.8rem, 20vw, 7rem);
+            }
+            .winner-tag {
+                top: 46px;
+                font-size: 0.75rem;
+                padding: 4px 8px;
+                width: 92%;
+            }
+            .score-controls {
+                gap: 6px;
+            }
+            .btn-score {
+                min-width: 44%;
+                padding: 12px 4px;
+                font-size: 1.15rem;
+                border-radius: 10px;
+            }
+            .btn-score.btn-minus {
+                flex: 1 1 100%;
+                padding: 7px;
+                font-size: 1rem;
+            }
+            .timer-container {
+                padding: 6px;
+            }
+            .timer-status-label {
+                font-size: 0.75rem;
+            }
+            .timer-display {
+                font-size: 3.1rem;
+            }
+            .round-pill {
+                padding: 6px 2px;
+                font-size: 0.75rem;
+            }
+            .mode-tab {
+                padding: 6px 4px;
+                font-size: 0.78rem;
+            }
+            .time-settings {
+                padding: 6px 8px;
+                font-size: 0.75rem;
+            }
+            .setting-group input {
+                padding: 3px 4px;
+                font-size: 0.85rem;
+            }
+            .center-actions {
+                gap: 6px;
+            }
+            .btn-action {
+                padding: 9px 6px;
+                font-size: 0.85rem;
+            }
+            .btn-end {
+                padding: 10px 6px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* 2. Khi xoay NGANG điện thoại (Landscape): Giống hệt máy tính (3 cột ngang: Đỏ - Đồng hồ - Xanh) */
+        @media (max-width: 1024px) and (orientation: landscape) {
+            main {
+                grid-template-columns: 1fr 250px 1fr;
+                gap: 6px;
+                padding: 6px;
+            }
+            .fighter-panel {
+                padding: 8px;
+            }
+            .fighter-name {
+                font-size: 1.1rem;
+                padding-bottom: 3px;
+            }
+            .score-box {
+                font-size: clamp(3.8rem, 16vh, 6rem);
+            }
+            .winner-tag {
+                top: 36px;
+                font-size: 0.7rem;
+                padding: 3px 8px;
+            }
+            .score-controls {
+                gap: 5px;
+            }
+            .btn-score {
+                min-width: 55px;
+                padding: 8px 4px;
+                font-size: 0.95rem;
+                border-radius: 8px;
+            }
+            .btn-score.btn-minus {
+                font-size: 0.85rem;
+            }
+            .center-panel {
+                padding: 6px 8px;
+                gap: 4px;
+            }
+            .round-pill {
+                padding: 4px 2px;
+                font-size: 0.68rem;
+            }
+            .mode-tab {
+                padding: 4px;
+                font-size: 0.7rem;
+            }
+            .timer-container {
+                padding: 4px;
+            }
+            .timer-status-label {
+                font-size: 0.65rem;
+            }
+            .timer-display {
+                font-size: 2.2rem;
+            }
+            .time-settings {
+                padding: 4px 6px;
+                font-size: 0.68rem;
+                gap: 6px;
+            }
+            .setting-group input {
+                padding: 2px 4px;
+                font-size: 0.78rem;
+            }
+            .center-actions {
+                gap: 4px;
+            }
+            .btn-action {
+                padding: 6px 4px;
+                font-size: 0.75rem;
+                border-radius: 6px;
+            }
+            .btn-end {
+                padding: 6px 4px;
+                font-size: 0.78rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <img src="logo.jpg" alt="Logo Vovinam TH An Lạc 3" class="header-logo">
+            <span>VOVINAM - TH AN LẠC 3</span>
+        </div>
+        <div class="header-right">
+            <div id="matchStateBadge" class="round-badge">HIỆP 1 - SẴN SÀNG THI ĐẤU</div>
+            <button class="btn-bg-picker" onclick="document.getElementById('bgFileInput').click()" title="Chọn ảnh từ điện thoại hoặc máy tính làm hình nền">
+                🖼️ Đổi Nền
+            </button>
+            <button id="btnClearBg" class="btn-bg-picker" style="display:none; border-color:#ef4444;" onclick="clearCustomBackground()" title="Xóa hình nền về mặc định">
+                ✖
+            </button>
+            <input type="file" id="bgFileInput" accept="image/*" style="display:none" onchange="handleBackgroundUpload(event)">
+        </div>
+    </header>
+
+    <main>
+        <!-- BÊN GIÁP ĐỎ -->
+        <section id="panelRed" class="fighter-panel fighter-red">
+            <div class="fighter-name" onclick="renameFighter('nameRed')" id="nameRed" title="Nhấn để đổi tên vận động viên">GIÁP ĐỎ</div>
+            <div id="winnerTagRed" class="winner-tag">🏆 CHIẾN THẮNG 🏆</div>
+            <div id="scoreRed" class="score-box">0</div>
+            <div class="score-controls">
+                <button class="btn-score" onclick="changeScore('red', 1)">+1 Điểm</button>
+                <button class="btn-score" onclick="changeScore('red', 2)">+2 Điểm</button>
+                <button class="btn-score btn-minus" onclick="changeScore('red', -1)">-1</button>
+            </div>
+        </section>
+
+        <!-- BẢNG ĐIỀU KHIỂN TRUNG TÂM -->
+        <section class="center-panel">
+            <!-- Thanh chọn Hiệp đấu (Hiệp 1, 2, 3, Hiệp phụ) -->
+            <div class="round-selector">
+                <button id="roundPill1" class="round-pill active-round" onclick="selectRound(1)">Hiệp 1</button>
+                <button id="roundPill2" class="round-pill" onclick="selectRound(2)">Hiệp 2</button>
+                <button id="roundPill3" class="round-pill" onclick="selectRound(3)">Hiệp 3</button>
+                <button id="roundPill4" class="round-pill overtime-pill" onclick="selectRound(4)" title="Hiệp phụ bàn thắng vàng (Ai lên điểm trước thắng ngay)">⚡ Hiệp Phụ</button>
+            </div>
+
+            <!-- Chế độ Hiệp đấu / Nghỉ giữa hiệp -->
+            <div class="mode-tabs">
+                <button id="tabFight" class="mode-tab active-fight" onclick="switchMode('fight')">⚔️ Thời gian đấu</button>
+                <button id="tabBreak" class="mode-tab" onclick="switchMode('break')">☕ Nghỉ giữa hiệp</button>
+            </div>
+
+            <!-- Đồng hồ đếm ngược -->
+            <div class="timer-container">
+                <div id="timerStatusLabel" class="timer-status-label">HIỆP 1 - ĐANG CHỜ</div>
+                <div id="timerDisplay" class="timer-display">02:00</div>
+            </div>
+
+            <!-- Cài đặt thời gian (giây) -->
+            <div class="time-settings">
+                <div class="setting-group">
+                    <label for="fightSecondsInput">TG Thi đấu (giây):</label>
+                    <input type="number" id="fightSecondsInput" value="120" min="5" max="600" onchange="updateConfiguredTime()">
+                </div>
+                <div class="setting-group">
+                    <label for="breakSecondsInput">TG Nghỉ hiệp (giây):</label>
+                    <input type="number" id="breakSecondsInput" value="60" min="5" max="300" onchange="updateConfiguredTime()">
+                </div>
+            </div>
+
+            <!-- Các nút điều khiển -->
+            <div class="center-actions">
+                <div class="action-row">
+                    <button id="btnStartPause" class="btn-action btn-start" onclick="toggleTimer()">
+                        ▶ BẮT ĐẦU
+                    </button>
+                    <button class="btn-action btn-bell" onclick="playGong('single')" title="Bấm chuông hiệu lệnh thủ công">
+                        🔔 CHUÔNG
+                    </button>
+                </div>
+
+                <button id="btnEndMatch" class="btn-action btn-end" onclick="endMatch('KẾT THÚC TRẬN ĐẤU')">
+                    🏁 KẾT THÚC TRẬN ĐẤU
+                </button>
+
+                <button class="btn-action btn-reset" onclick="resetMatch()">
+                    🔄 ĐẶT LẠI TỪ ĐẦU (RESET)
+                </button>
+            </div>
+        </section>
+
+        <!-- BÊN GIÁP XANH -->
+        <section id="panelBlue" class="fighter-panel fighter-blue">
+            <div class="fighter-name" onclick="renameFighter('nameBlue')" id="nameBlue" title="Nhấn để đổi tên vận động viên">GIÁP XANH</div>
+            <div id="winnerTagBlue" class="winner-tag">🏆 CHIẾN THẮNG 🏆</div>
+            <div id="scoreBlue" class="score-box">0</div>
+            <div class="score-controls">
+                <button class="btn-score" onclick="changeScore('blue', 1)">+1 Điểm</button>
+                <button class="btn-score" onclick="changeScore('blue', 2)">+2 Điểm</button>
+                <button class="btn-score btn-minus" onclick="changeScore('blue', -1)">-1</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <span>Phím tắt:</span>
+        <span>Giáp Đỏ: <kbd>Q</kbd> (+1) <kbd>W</kbd> (+2) <kbd>E</kbd> (-1)</span>
+        <span>Giáp Xanh: <kbd>I</kbd> (+1) <kbd>O</kbd> (+2) <kbd>P</kbd> (-1)</span>
+        <span>Đồng hồ: <kbd>Space</kbd></span>
+        <span>Chuông: <kbd>B</kbd></span>
+        <span>Luật: Cách biệt ≥ 10đ thắng ngay | Hòa sau 3 hiệp $\rightarrow$ Hiệp phụ (Ai ghi điểm trước thắng ngay)</span>
+    </footer>
+
+    <script>
+        // --- TRẠNG THÁI TRẬN ĐẤU ---
+        let scoreRed = 0;
+        let scoreBlue = 0;
+        let currentRound = 1;      // 1, 2, 3 là hiệp chính; 4 là Hiệp Phụ (Golden Score)
+        let currentMode = 'fight'; // 'fight' (Thi đấu) hoặc 'break' (Nghỉ giữa hiệp)
+        let timeLeft = 120;        // Tính bằng giây
+        let timerInterval = null;
+        let isRunning = false;
+        let isMatchEnded = false;
+        let savedStateBeforeEnd = null; // Lưu lại trạng thái trước khi bấm Kết thúc trận đấu
+
+        // --- HỆ THỐNG ÂM THANH CHUÔNG ĐÀI (Web Audio API) ---
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playGong(type = 'single') {
+            initAudio();
+            const hits = type === 'triple' ? 3 : 1;
+            const spacing = 0.42;
+
+            for (let i = 0; i < hits; i++) {
+                const startTime = audioCtx.currentTime + i * spacing;
+
+                const oscFundamental = audioCtx.createOscillator();
+                const oscHarmonic1 = audioCtx.createOscillator();
+                const oscHarmonic2 = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscFundamental.type = 'sine';
+                oscFundamental.frequency.setValueAtTime(520, startTime);
+
+                oscHarmonic1.type = 'triangle';
+                oscHarmonic1.frequency.setValueAtTime(1040, startTime);
+
+                oscHarmonic2.type = 'sine';
+                oscHarmonic2.frequency.setValueAtTime(1560, startTime);
+
+                gainNode.gain.setValueAtTime(0.001, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.9, startTime + 0.02);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.8);
+
+                oscFundamental.connect(gainNode);
+                oscHarmonic1.connect(gainNode);
+                oscHarmonic2.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscFundamental.start(startTime);
+                oscHarmonic1.start(startTime);
+                oscHarmonic2.start(startTime);
+
+                oscFundamental.stop(startTime + 1.85);
+                oscHarmonic1.stop(startTime + 1.85);
+                oscHarmonic2.stop(startTime + 1.85);
+            }
+        }
+
+        function getRoundName(roundNumber) {
+            return roundNumber <= 3 ? `HIỆP ${roundNumber}` : '⚡ HIỆP PHỤ';
+        }
+
+        function updateRoundUI() {
+            for (let r = 1; r <= 4; r++) {
+                const pill = document.getElementById(`roundPill${r}`);
+                if (r === currentRound) {
+                    pill.classList.add('active-round');
+                } else {
+                    pill.classList.remove('active-round');
+                }
+            }
+        }
+
+        function selectRound(roundNumber) {
+            if (isMatchEnded) return;
+            pauseTimer();
+            currentRound = roundNumber;
+            updateRoundUI();
+            switchMode('fight');
+        }
+
+        // --- CẬP NHẬT ĐIỂM SỐ & KIỂM TRA LUẬT THẮNG TỨC THÌ ---
+        function changeScore(side, delta) {
+            if (isMatchEnded) return;
+
+            if (side === 'red') {
+                scoreRed = scoreRed + delta; // Cho phép xuống điểm âm
+                const el = document.getElementById('scoreRed');
+                el.textContent = scoreRed;
+                animateScore(el);
+            } else {
+                scoreBlue = scoreBlue + delta; // Cho phép xuống điểm âm
+                const el = document.getElementById('scoreBlue');
+                el.textContent = scoreBlue;
+                animateScore(el);
+            }
+
+            // LUẬT 1: Trong HIỆP PHỤ (currentRound === 4), bên nào vừa lên điểm (delta > 0) và dẫn điểm -> Thắng ngay lập tức!
+            if (currentRound === 4 && delta > 0 && scoreRed !== scoreBlue) {
+                endMatch('THẮNG ĐIỂM VÀNG HIỆP PHỤ');
+                return;
+            }
+
+            // LUẬT 2: Điểm cách biệt từ 10 điểm trở lên (10-0, 11-1, 12-2...) -> Lập tức kết thúc trận đấu!
+            const scoreDiff = Math.abs(scoreRed - scoreBlue);
+            if (scoreDiff >= 10) {
+                endMatch(`THẮNG CÁCH BIỆT ${scoreDiff} ĐIỂM`);
+                return;
+            }
+        }
+
+        function animateScore(element) {
+            element.classList.remove('score-bump');
+            void element.offsetWidth;
+            element.classList.add('score-bump');
+            setTimeout(() => element.classList.remove('score-bump'), 150);
+        }
+
+        // --- ĐỒNG HỒ ĐẾM NGƯỢC ---
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function updateTimerDisplay() {
+            const display = document.getElementById('timerDisplay');
+            display.textContent = formatTime(timeLeft);
+
+            if (timeLeft <= 10 && timeLeft > 0 && isRunning) {
+                display.classList.add('urgent');
+            } else {
+                display.classList.remove('urgent');
+            }
+        }
+
+        function updateConfiguredTime() {
+            if (isRunning) return;
+            const fightSecs = parseInt(document.getElementById('fightSecondsInput').value, 10) || 120;
+            const breakSecs = parseInt(document.getElementById('breakSecondsInput').value, 10) || 60;
+            timeLeft = currentMode === 'fight' ? fightSecs : breakSecs;
+            updateTimerDisplay();
+        }
+
+        function switchMode(mode) {
+            pauseTimer();
+            currentMode = mode;
+
+            const tabFight = document.getElementById('tabFight');
+            const tabBreak = document.getElementById('tabBreak');
+            const statusLabel = document.getElementById('timerStatusLabel');
+            const badge = document.getElementById('matchStateBadge');
+            const rName = getRoundName(currentRound);
+
+            if (mode === 'fight') {
+                tabFight.className = 'mode-tab active-fight';
+                tabBreak.className = 'mode-tab';
+                if (currentRound === 4) {
+                    statusLabel.textContent = '⚡ HIỆP PHỤ (AI GHI ĐIỂM TRƯỚC THẮNG NGAY)';
+                    statusLabel.style.color = '#ef4444';
+                    badge.textContent = '⚡ HIỆP PHỤ - BÀN THẮNG VÀNG';
+                } else {
+                    statusLabel.textContent = `THI ĐẤU ${rName}`;
+                    statusLabel.style.color = '#10b981';
+                    badge.textContent = `${rName} - SẴN SÀNG THI ĐẤU`;
+                }
+                timeLeft = parseInt(document.getElementById('fightSecondsInput').value, 10) || 120;
+            } else {
+                tabFight.className = 'mode-tab';
+                tabBreak.className = 'mode-tab active-break';
+                statusLabel.textContent = `NGHỈ GIỮA HIỆP (CHUẨN BỊ ${getRoundName(currentRound + 1)})`;
+                statusLabel.style.color = '#f59e0b';
+                badge.textContent = `☕ ĐANG NGHỈ GIỮA HIỆP`;
+                timeLeft = parseInt(document.getElementById('breakSecondsInput').value, 10) || 60;
+            }
+
+            updateTimerDisplay();
+        }
+
+        function toggleTimer() {
+            if (isMatchEnded) return;
+
+            if (!isRunning) {
+                startTimer(true);
+            } else {
+                pauseTimer();
+            }
+        }
+
+        function startTimer(shouldRingStartBell = true) {
+            if (timeLeft <= 0) {
+                updateConfiguredTime();
+            }
+
+            isRunning = true;
+            if (shouldRingStartBell) {
+                playGong('single');
+            }
+
+            const btn = document.getElementById('btnStartPause');
+            btn.innerHTML = '⏸ TẠM DỪNG';
+            btn.className = 'btn-action btn-pause';
+
+            const badge = document.getElementById('matchStateBadge');
+            const rName = getRoundName(currentRound);
+
+            if (currentMode === 'fight') {
+                badge.textContent = currentRound === 4
+                    ? '⚡ ĐANG ĐẤU HIỆP PHỤ (GHI ĐIỂM LÀ THẮNG NGAY!)'
+                    : `🔥 ĐANG THI ĐẤU ${rName}`;
+            } else {
+                badge.textContent = `⏳ ĐANG NGHỈ GIỮA HIỆP (CHỜ ${getRoundName(currentRound + 1)})`;
+            }
+
+            timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateTimerDisplay();
+                }
+
+                if (timeLeft === 0) {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        // --- XỬ LÝ KHI ĐỒNG HỒ ĐẾM VỀ 00:00 ---
+        function handleTimeOut() {
+            if (currentMode === 'fight') {
+                // Hết giờ Hiệp 1 hoặc Hiệp 2 -> Đổ 3 hồi chuông và lập tức chuyển sang đếm ngược Nghỉ giữa hiệp
+                if (currentRound < 3) {
+                    playGong('triple');
+                    switchMode('break');
+                    startTimer(false);
+                }
+                // Hết giờ Hiệp 3 (Kết thúc 3 hiệp thi đấu chính)
+                else if (currentRound === 3) {
+                    if (scoreRed !== scoreBlue) {
+                        // Có bên điểm cao hơn -> Kết thúc ngay trận đấu & nhấp nháy bên thắng
+                        endMatch('HẾT 3 HIỆP CHÍNH');
+                    } else {
+                        // Bằng điểm nhau sau 3 hiệp chính -> Nghỉ giữa hiệp rồi bước vào HIỆP PHỤ
+                        playGong('triple');
+                        switchMode('break');
+                        document.getElementById('timerStatusLabel').textContent = 'HÒA SAU 3 HIỆP - NGHỈ CHUẨN BỊ HIỆP PHỤ';
+                        document.getElementById('matchStateBadge').textContent = '⚖️ HÒA ĐIỂM - NGHỈ CHỜ HIỆP PHỤ';
+                        startTimer(false);
+                    }
+                }
+                // Hết giờ Hiệp Phụ
+                else {
+                    endMatch('HẾT GIỜ HIỆP PHỤ');
+                }
+            } else {
+                // Hết giờ Nghỉ giữa hiệp -> Chuyển sang hiệp kế tiếp (Hiệp 2, Hiệp 3 hoặc Hiệp Phụ)
+                playGong('triple');
+                currentRound = Math.min(4, currentRound + 1);
+                updateRoundUI();
+                switchMode('fight');
+
+                const badge = document.getElementById('matchStateBadge');
+                if (currentRound === 4) {
+                    badge.textContent = '⚡ HẾT GIỜ NGHỈ - BẤM BẮT ĐẦU ĐỂ VÀO HIỆP PHỤ';
+                } else {
+                    badge.textContent = `⏰ HẾT GIỜ NGHỈ - SẴN SÀNG ${getRoundName(currentRound)}`;
+                }
+            }
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            const btn = document.getElementById('btnStartPause');
+            btn.innerHTML = '▶ TIẾP TỤC';
+            btn.className = 'btn-action btn-start';
+            document.getElementById('timerDisplay').classList.remove('urgent');
+        }
+
+        // --- KẾT THÚC TRẬN ĐẤU & NHẤP NHÁY BÊN THẮNG (BẤM LẦN NỮA ĐỂ KHÔI PHỤC NẾU BẤM NHẦM) ---
+        function resumeEndedMatch() {
+            isMatchEnded = false;
+
+            const panelRed = document.getElementById('panelRed');
+            const panelBlue = document.getElementById('panelBlue');
+            const badge = document.getElementById('matchStateBadge');
+            const statusLabel = document.getElementById('timerStatusLabel');
+            const btnStartPause = document.getElementById('btnStartPause');
+            const btnEnd = document.getElementById('btnEndMatch');
+
+            // Tắt hiệu ứng nhấp nháy
+            panelRed.classList.remove('winner-active');
+            panelBlue.classList.remove('winner-active');
+
+            // Mở khóa lại các nút cộng/trừ điểm
+            document.querySelectorAll('.btn-score').forEach(b => b.disabled = false);
+
+            // Trả lại nút Kết thúc trận đấu về bình thường
+            if (btnEnd) {
+                btnEnd.innerHTML = '🏁 KẾT THÚC TRẬN ĐẤU';
+                btnEnd.style.background = '#e11d48';
+            }
+
+            // Khôi phục y nguyên thời gian, hiệp đấu và trạng thái trước khi bấm Kết thúc
+            if (savedStateBeforeEnd) {
+                currentRound = savedStateBeforeEnd.currentRound;
+                currentMode = savedStateBeforeEnd.currentMode;
+                timeLeft = savedStateBeforeEnd.timeLeft;
+                updateRoundUI();
+                updateTimerDisplay();
+
+                badge.textContent = savedStateBeforeEnd.badgeText;
+                statusLabel.textContent = savedStateBeforeEnd.statusLabelText;
+                statusLabel.style.color = savedStateBeforeEnd.statusLabelColor;
+            }
+
+            btnStartPause.innerHTML = timeLeft > 0 ? '▶ TIẾP TỤC' : '▶ BẮT ĐẦU';
+            btnStartPause.className = 'btn-action btn-start';
+        }
+
+        function endMatch(reason = 'KẾT THÚC TRẬN ĐẤU') {
+            // Nếu trận đấu đang ở trạng thái Kết thúc mà người dùng bấm vào nút Kết thúc lần nữa -> Khôi phục lại y nguyên!
+            if (isMatchEnded && reason === 'KẾT THÚC TRẬN ĐẤU') {
+                resumeEndedMatch();
+                return;
+            }
+
+            const badge = document.getElementById('matchStateBadge');
+            const statusLabel = document.getElementById('timerStatusLabel');
+
+            // Lưu lại toàn bộ trạng thái hiện tại trước khi kết thúc
+            savedStateBeforeEnd = {
+                currentRound: currentRound,
+                currentMode: currentMode,
+                timeLeft: timeLeft,
+                badgeText: badge.textContent,
+                statusLabelText: statusLabel.textContent,
+                statusLabelColor: statusLabel.style.color
+            };
+
+            clearInterval(timerInterval);
+            isRunning = false;
+            isMatchEnded = true;
+
+            // 3 hồi chuông kết thúc trận đấu
+            playGong('triple');
+
+            const panelRed = document.getElementById('panelRed');
+            const panelBlue = document.getElementById('panelBlue');
+            const tagRed = document.getElementById('winnerTagRed');
+            const tagBlue = document.getElementById('winnerTagBlue');
+            const btn = document.getElementById('btnStartPause');
+            const btnEnd = document.getElementById('btnEndMatch');
+
+            btn.innerHTML = '▶ BẮT ĐẦU';
+            btn.className = 'btn-action btn-start';
+            document.getElementById('timerDisplay').classList.remove('urgent');
+
+            // Đổi tên nút Kết thúc để báo hiệu bấm lần nữa sẽ tiếp tục trận đấu
+            if (btnEnd) {
+                btnEnd.innerHTML = '↩️ HỦY KẾT THÚC (TIẾP TỤC TRẬN)';
+                btnEnd.style.background = '#d97706';
+            }
+
+            panelRed.classList.remove('winner-active');
+            panelBlue.classList.remove('winner-active');
+
+            // Khóa các nút cộng điểm
+            document.querySelectorAll('.btn-score').forEach(b => b.disabled = true);
+
+            const nameRed = document.getElementById('nameRed').textContent;
+            const nameBlue = document.getElementById('nameBlue').textContent;
+
+            if (scoreRed > scoreBlue) {
+                tagRed.textContent = `🏆 CHIẾN THẮNG (${reason}) 🏆`;
+                panelRed.classList.add('winner-active');
+                badge.textContent = `🏆 ${reason}: ${nameRed} THẮNG (${scoreRed} - ${scoreBlue})`;
+            } else if (scoreBlue > scoreRed) {
+                tagBlue.textContent = `🏆 CHIẾN THẮNG (${reason}) 🏆`;
+                panelBlue.classList.add('winner-active');
+                badge.textContent = `🏆 ${reason}: ${nameBlue} THẮNG (${scoreBlue} - ${scoreRed})`;
+            } else {
+                tagRed.textContent = '⚖️ HÒA ĐIỂM ⚖️';
+                tagBlue.textContent = '⚖️ HÒA ĐIỂM ⚖️';
+                panelRed.classList.add('winner-active');
+                panelBlue.classList.add('winner-active');
+                badge.textContent = `⚖️ ${reason}: HÒA ĐIỂM (${scoreRed} - ${scoreBlue})`;
+            }
+        }
+
+        // --- ĐẶT LẠI TỪ ĐẦU (RESET) ---
+        function resetMatch() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            isMatchEnded = false;
+            savedStateBeforeEnd = null;
+
+            scoreRed = 0;
+            scoreBlue = 0;
+            currentRound = 1;
+            updateRoundUI();
+
+            document.getElementById('scoreRed').textContent = '0';
+            document.getElementById('scoreBlue').textContent = '0';
+
+            document.getElementById('panelRed').classList.remove('winner-active');
+            document.getElementById('panelBlue').classList.remove('winner-active');
+
+            document.querySelectorAll('.btn-score').forEach(b => b.disabled = false);
+
+            const btn = document.getElementById('btnStartPause');
+            btn.innerHTML = '▶ BẮT ĐẦU';
+            btn.className = 'btn-action btn-start';
+
+            const btnEnd = document.getElementById('btnEndMatch');
+            if (btnEnd) {
+                btnEnd.innerHTML = '🏁 KẾT THÚC TRẬN ĐẤU';
+                btnEnd.style.background = '#e11d48';
+            }
+
+            switchMode('fight');
+        }
+
+        // --- ĐỔI TÊN VẬN ĐỘNG VIÊN ---
+        function renameFighter(elementId) {
+            const el = document.getElementById(elementId);
+            const newName = prompt('Nhập tên vận động viên / đơn vị:', el.textContent);
+            if (newName && newName.trim() !== '') {
+                el.textContent = newName.trim().toUpperCase();
+            }
+        }
+
+        // --- THAY ĐỔI HÌNH NỀN TỪ ĐIỆN THOẠI / MÁY TÍNH (CÓ TỰ ĐỘNG LƯU) ---
+        function applyBackground(dataUrl) {
+            if (dataUrl) {
+                document.body.style.backgroundImage = `url('${dataUrl}')`;
+                document.body.classList.add('has-custom-bg');
+                document.getElementById('btnClearBg').style.display = 'flex';
+            } else {
+                document.body.style.backgroundImage = '';
+                document.body.classList.remove('has-custom-bg');
+                document.getElementById('btnClearBg').style.display = 'none';
+            }
+        }
+
+        function handleBackgroundUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                applyBackground(dataUrl);
+                try {
+                    localStorage.setItem('vovinam_custom_bg', dataUrl);
+                } catch (err) {
+                    // Ảnh dung lượng lớn vẫn hiển thị bình thường trong phiên làm việc
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearCustomBackground() {
+            applyBackground(null);
+            localStorage.removeItem('vovinam_custom_bg');
+            document.getElementById('bgFileInput').value = '';
+        }
+
+        // Khôi phục hình nền đã chọn khi mở lại trang
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedBg = localStorage.getItem('vovinam_custom_bg');
+            if (savedBg) {
+                applyBackground(savedBg);
+            }
+        });
+
+        // --- PHÍM TẮT BÀN PHÍM ---
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+
+            const key = e.key.toLowerCase();
+            if (key === 'q') changeScore('red', 1);
+            if (key === 'w') changeScore('red', 2);
+            if (key === 'e') changeScore('red', -1);
+
+            if (key === 'i') changeScore('blue', 1);
+            if (key === 'o') changeScore('blue', 2);
+            if (key === 'p') changeScore('blue', -1);
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleTimer();
+            }
+            if (key === 'b') playGong('single');
+        });
+    </script>
+</body>
+</html>
